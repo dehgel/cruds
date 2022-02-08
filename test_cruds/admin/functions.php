@@ -1,9 +1,9 @@
 <?php 
 
 /*
- * Admin functions. 
+ * Admin functions
  * Avoid future redundancy or use of the same function name.
- * Return NULL if false.
+ * Return error if false.
  */
 
 // Insert new data
@@ -59,7 +59,6 @@ if(!function_exists('savedata')) {
 		}
 
 		$sqlcom->InsertQuery( $totable, $therows, $thevalues );
-
 	}
 }
 
@@ -87,11 +86,8 @@ if(!function_exists('remove_from_data')) {
 		    echo 'You have successfully deleted the data.';
 
 		    header('Location: index.php');
-
 		}
-
 	}
-
 }
 
 if(!function_exists('updateData')) {
@@ -151,7 +147,6 @@ if(!function_exists('meta_head')) {
 			    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
 			    <link rel="stylesheet" href="assets/css/styles.css">
 			</head>';
-
 	}
 }
 
@@ -174,40 +169,28 @@ if(!function_exists('getSelectedData')) {
 		$row = $query->fetch_assoc();
 
 		return $row[ $val ];			
-
 	}
-
 }
 
+if(!function_exists('ChangeAdminPassword')) {
 
-if(!function_exists('UserAccountSettings')) {
-
-
-	function UserAccountSettings($input_new, $input_confim) {
+	function ChangeAdminPassword($input_new, $input_confirm) {
 
 		$sqlcom = new SQLQuery();
 
-		$cid = $_GET['id'];
+		$cid = $_GET['user_id'];
 
 		// Select data table
 		$table = 'accounts';
 
-		$values = "PASSWORD='$input_confirm'";
+		$values = "PASSWORD=SHA1('$input_confirm')";
 
-		// Curent user
-		if( $_POST[$input_new] === $_POST[$input_confirm] ) {
+		if( $input_new == $input_confirm ) {
 
 			$sqlcom->UpdateQuery( $table, $values, $cid );
 
 			echo "You've changed your password successfully.";
-
-		} else {
-
-			echo '<span>Password mistmatched!</span>';
-		}
-
-		
-
+		} 
 	}
 }
 
@@ -220,10 +203,6 @@ if(!function_exists('is_user_logged_in')) {
 		if(!isset($_SESSION['login'])){ //if login in session is not set
 
 		    header("Location: /index.php");
-
 		}
-
-		
 	}
-
 }
