@@ -7,54 +7,9 @@ session_start();
 if(!defined('ABSPATH'))  define('ABSPATH', getcwd() );
 
 require_once( ABSPATH . '/head.php');
-
-if( isset($_POST['login']) ) {
-
-    
-
-	// Set login credentials variables
-	$u = $_POST['user'];  
-	$p = $_POST['pass'];  
-
-
-
-	// Avoid injections on login request
-	$username = stripcslashes($u);  
-	$password = stripcslashes($p);  
-	$username = mysqli_real_escape_string($ConnStr, $username);  
-	$password = mysqli_real_escape_string($ConnStr, $password);  
-
-	$querylogin = "SELECT * FROM accounts WHERE USERNAME = '$username' and PASSWORD = SHA1('$password')"; 
-
-	$result = mysqli_query( $ConnStr, $querylogin );
-
-    $row = $result->fetch_assoc();
-
-	// Session begins. Return string.
-	if( $result ){ 
-
-        $_SESSION['user'] = $u;
-        $_SESSION['pass'] = $p;
-
-        if( isset($_SESSION['user']) ) {
-
-            header('Location: admin/');  
-
-        }
-   
-
-	}  
-
-	else {  
-
-	    echo "<h1> Login failed. Invalid username or password.</h1>";  
-	} 
-
-}
+require_once('loader.php');
 
 ?>
-
-<?php require_once('loader.php'); ?>
 
 <!DOCTYPE html>
 <html>
@@ -79,7 +34,42 @@ if( isset($_POST['login']) ) {
                     <p class="profile-name-card"> </p>
                     <form class="form-signin" method="POST">
 
-                    	<span class="reauth-email"> </span>
+                    	<span class="reauth-email">
+                        <?php if( isset($_POST['login']) ) {
+
+                            // Set login credentials variables
+                            $u = $_POST['user'];  
+                            $p = $_POST['pass'];  
+
+                            // Avoid injections on login request
+                            $username = stripcslashes($u);  
+                            $password = stripcslashes($p);  
+
+                            $table = 'accounts';
+                            $obj = 'ID';
+                            $args = "WHERE USERNAME = '$username' and PASSWORD = SHA1('$password')";  
+
+                            $sqlcom = new SQLQuery();
+
+                            $query = $sqlcom->SelectQuery( $obj, $table, $args );
+
+                            $result = $query->fetch_assoc();
+
+                            if( $result ){ 
+
+                                $_SESSION['user'] = $u;
+                                $_SESSION['pass'] = $p;
+
+                                header('Location: admin/');  
+
+                            }  
+
+                            else {  
+
+                                echo "<p> Login failed. Invalid username or password.</p>";  
+                            } 
+
+                        }?> </span>
                         <input class="form-control" id="user" name="user" type="email" required="" placeholder="Email address" autofocus="" id="inputEmail" >
                         <input class="form-control" id="pass" name="pass" type="password" required="" placeholder="Password" id="inputPassword">
                         <div class="checkbox">
